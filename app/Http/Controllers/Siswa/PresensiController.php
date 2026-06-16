@@ -66,7 +66,7 @@ class PresensiController extends Controller
                 ], 404);
             }
 
-            $session->load('kelas.jurusan');
+           $session->load('kelas.waliKelas');
 
             if ($qrCode->status !== 'active') {
                 return response()->json([
@@ -147,7 +147,7 @@ class PresensiController extends Controller
                 'session_id' => $session->id,
                 'type' => $type,
                 'kelas' => $session->kelas->nama_kelas,
-                'jurusan' => $session->kelas->jurusan->nama_jurusan,
+                'wali_kelas' => $session->kelas->waliKelas->nama_wali,
                 'tanggal' => $session->tanggal->format('d M Y'),
                 'jam_mulai' => $jamMulai->format('H:i'),
                 'jam_selesai' => $jamSelesai->format('H:i'),

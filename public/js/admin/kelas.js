@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <p class="mb-2">
                                             <span class="badge bg-primary me-2">Kode: ${kelas.kode_kelas}</span>
                                             <span class="badge bg-info me-2">Tingkat ${kelas.tingkat}</span>
-                                            <span class="badge bg-success">${kelas.jurusan.kode_jurusan}</span>
+                                            <span class="badge bg-success">${kelas.wali_kelas ? kelas.wali_kelas.kode_wali : '-'}</span>
                                         </p>
                                         <p class="mb-0">
                                             <i class="bi bi-person-badge me-2"></i>
@@ -378,7 +378,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     
                     form.action = `/admin/kelas/${kelas.id}`;
                     
-                    document.getElementById('edit_jurusan_id').value = kelas.jurusan_id;
+                    document.getElementById('edit_wali_id').value = kelas.wali_id;
                     document.getElementById('edit_tingkat').value = kelas.tingkat;
                     document.getElementById('edit_kode_kelas').value = kelas.kode_kelas;
                     document.getElementById('edit_nama_kelas').value = kelas.nama_kelas;
@@ -755,12 +755,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const createForm = document.getElementById('createKelasForm');
     if (createForm) {
         createForm.addEventListener('submit', function(e) {
-            const jurusan = this.querySelector('select[name="jurusan_id"]').value;
+            const waliId = this.querySelector('select[name="wali_id"]').value;
             const tingkat = this.querySelector('select[name="tingkat"]').value;
             const kodeKelas = this.querySelector('input[name="kode_kelas"]').value.trim();
             const namaKelas = this.querySelector('input[name="nama_kelas"]').value.trim();
             
-            if (!jurusan || !tingkat || !kodeKelas || !namaKelas) {
+            if (!waliId || !tingkat || !kodeKelas || !namaKelas) {
                 e.preventDefault();
                 Swal.fire({
                     icon: 'warning',

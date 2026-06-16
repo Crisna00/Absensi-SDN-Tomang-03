@@ -14,19 +14,21 @@ class PresensiController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Kelas::with(['jurusan', 'siswa']);
+      
+$query = Kelas::with(['waliKelas', 'siswa']);
 
-        if ($request->filled('jurusan_id')) {
-            $query->where('jurusan_id', $request->jurusan_id);
-        }
+
+if ($request->filled('wali_id')) {
+   
+    $query->where('wali_id', $request->wali_id);
+}
 
         if ($request->filled('search')) {
             $query->where('nama_kelas', 'like', '%' . $request->search . '%');
         }
 
         $kelasList = $query->withCount('siswa')->get();
-        $jurusans = \App\Models\Jurusan::all();
-
+        $wali_kelas = \App\Models\WaliKelas::all();
         $today = now()->format('Y-m-d');
         $stats = [
             'total_kelas' => $kelasList->count(),
@@ -39,12 +41,12 @@ class PresensiController extends Controller
                 ->count(),
         ];
 
-        return view('guru.presensi.index', compact('kelasList', 'jurusans', 'stats'));
-    }
+        return view('guru.presensi.index', compact('kelasList', 'wali_kelas', 'stats'));
+}
 
     public function showKelas(Request $request, Kelas $kelas)
     {
-        $kelas->load(['jurusan', 'siswa']);
+       $kelas->load(['waliKelas', 'siswa']);
         
         $filterDate = $request->filled('tanggal') ? $request->tanggal : now()->format('Y-m-d');
 
@@ -85,8 +87,8 @@ class PresensiController extends Controller
                     'id' => $kelas->id,
                     'nama_kelas' => $kelas->nama_kelas,
                     'kode_kelas' => $kelas->kode_kelas,
-                    'jurusan' => [
-                        'nama_jurusan' => $kelas->jurusan->nama_jurusan,
+                    'wali_kelas' => [
+                    'nama_wali' => $kelas->waliKelas->nama_wali ?? 'Belum Ditentukan',
                     ],
                 ],
                 'attendance_data' => collect($attendanceData)->map(function($item) {

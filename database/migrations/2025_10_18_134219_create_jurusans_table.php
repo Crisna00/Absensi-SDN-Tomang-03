@@ -8,19 +8,19 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('jurusans', function (Blueprint $table) {
+        Schema::create('wali_kelas', function (Blueprint $table) {
             $table->id();
-            $table->string('kode_jurusan', 10)->unique();
-            $table->string('nama_jurusan');
+            $table->string('kode_wali', 10)->unique();
+            $table->string('nama_wali');
             $table->text('deskripsi')->nullable();
             $table->timestamps();
 
-            $table->index('kode_jurusan');
+            $table->index('kode_wali');
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('jurusans');
+        Schema::dropIfExists('wali_kelas');
     }
 };

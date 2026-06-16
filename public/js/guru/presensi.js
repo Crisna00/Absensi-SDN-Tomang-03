@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <div class="d-flex align-items-center gap-3">
                             <i class="bi bi-mortarboard text-primary fs-4"></i>
-                            <span class="text-muted">${kelas.jurusan.nama_jurusan}</span>
+                            <span class="text-muted">${kelas.wali_kelas.nama_wali}</span>
                             <span class="badge bg-primary-soft text-primary"># ${kelas.kode_kelas}</span>
                         </div>
                         ${activeSession ? `

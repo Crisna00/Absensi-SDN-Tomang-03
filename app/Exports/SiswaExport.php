@@ -20,19 +20,20 @@ class SiswaExport implements FromCollection, WithHeadings, WithMapping, WithStyl
     }
 
     public function collection()
-    {
-        $query = User::where('role', 2)->with('kelas.jurusan');
+{
+    
+    $query = User::where('role', 2)->with('kelas.wali_kelas');
 
-        if (!empty($this->filters['kelas_id'])) {
-            $query->where('kelas_id', $this->filters['kelas_id']);
-        }
-
-        if (!empty($this->filters['status'])) {
-            $query->where('status', $this->filters['status']);
-        }
-
-        return $query->orderBy('name', 'asc')->get();
+    if (!empty($this->filters['kelas_id'])) {
+        $query->where('kelas_id', $this->filters['kelas_id']);
     }
+
+    if (!empty($this->filters['status'])) {
+        $query->where('status', $this->filters['status']);
+    }
+
+    return $query->orderBy('name', 'asc')->get();
+}
 
     public function headings(): array
     {

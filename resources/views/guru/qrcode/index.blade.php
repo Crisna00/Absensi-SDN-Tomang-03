@@ -49,7 +49,7 @@
                                         <option value="">Semua Kelas</option>
                                         @foreach($kelas as $k)
                                             <option value="{{ $k->id }}" {{ request('kelas_id') == $k->id ? 'selected' : '' }}>
-                                                {{ $k->nama_kelas }} - {{ $k->jurusan->nama_jurusan }}
+                                                {{ $k->nama_kelas }} - {{ $k->waliKelas->nama_wali }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -423,7 +423,7 @@
                                         <option value="">Pilih Kelas</option>
                                         @foreach($kelas as $k)
                                             <option value="{{ $k->id }}">
-                                                {{ $k->nama_kelas }} - {{ $k->jurusan->nama_jurusan }} 
+                                                {{ $k->nama_kelas }} - {{ $k->waliKelas->nama_wali }} 
                                                 ({{ $k->siswa_count ?? 0 }} siswa)
                                             </option>
                                         @endforeach

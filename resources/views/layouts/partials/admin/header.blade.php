@@ -127,9 +127,9 @@ document.addEventListener('DOMContentLoaded', function() {
             keywords: ['manajemen user', 'user', 'pengguna', 'users', 'kelola user', 'daftar user', 'data user', 'manage user']
         },
         { 
-            title: 'Manajemen Jurusan', 
-            url: '{{ route("admin.jurusan.index") }}', 
-            keywords: ['manajemen jurusan', 'jurusan', 'program studi', 'prodi', 'kelola jurusan', 'daftar jurusan', 'data jurusan', 'major', 'department']
+            title: 'Manajemen Wali Kelas', 
+           url: '{{ route("admin.wali-kelas.index") }}', 
+           keywords: ['manajemen Wali Kelas', 'wali kelas', 'guru kelas', 'kelola Wali Kelas', 'daftar Wali Kelas', 'data Wali Kelas', 'homeroom teacher']
         },
         { 
             title: 'Manajemen Kelas', 

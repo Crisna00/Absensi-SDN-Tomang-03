@@ -49,11 +49,11 @@
                 </div>
             </li>
 
-            <!-- Manajemen Jurusan -->
+            <!-- Manajemen Wali Kelas -->
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('admin.jurusan.index') }}">
+                <a class="nav-link" href="{{ route('admin.wali-kelas.index') }}">
                     <i data-feather="Book" class="bi bi-book icon-xs me-2"></i>
-                    Manajemen Jurusan
+                    Manajemen Wali Kelas
                 </a>
             </li>
 

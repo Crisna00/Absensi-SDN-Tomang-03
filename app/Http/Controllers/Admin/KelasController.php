@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Kelas;
-use App\Models\Jurusan;
+use App\Models\WaliKelas;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -12,166 +12,176 @@ use Illuminate\Support\Facades\DB;
 class KelasController extends Controller
 {
     public function index(Request $request)
-    {
-        $query = Kelas::with(['jurusan', 'waliKelas'])->withCount('siswa');
-        
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('nama_kelas', 'like', "%{$search}%")
-                  ->orWhere('kode_kelas', 'like', "%{$search}%");
-            });
-        }
-        
-        if ($request->filled('tingkat')) {
-            $query->where('tingkat', $request->tingkat);
-        }
-        
-        if ($request->filled('jurusan_id')) {
-            $query->where('jurusan_id', $request->jurusan_id);
-        }
-        
-        $query->latest();
-        
-        $kelas = $query->paginate(10);
-        $jurusans = Jurusan::all();
-        
-        $gurus = DB::table('users')
-            ->where('role', 0)
-            ->select('id', 'name', 'email')
-            ->orderBy('name', 'asc')
-            ->get();
-        
-        return view('admin.kelas.index', compact('kelas', 'jurusans', 'gurus'));
+{
+   
+    $query = Kelas::with(['waliKelas'])->withCount('siswa');
+    
+    // Pencarian berdasarkan nama atau kode kelas
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $query->where(function($q) use ($search) {
+            $q->where('nama_kelas', 'like', "%{$search}%")
+              ->orWhere('kode_kelas', 'like', "%{$search}%");
+        });
     }
+    
+    // Filter berdasarkan tingkat (misal: 10, 11, 12)
+    if ($request->filled('tingkat')) {
+        $query->where('tingkat', $request->tingkat);
+    }
+    
+   
+    if ($request->filled('wali_id')) {
+        $query->where('wali_id', $request->wali_id);
+    }
+    
+    $query->latest();
+    
+    $kelas = $query->paginate(10);
+    
+    // 3. DIUBAH: Mengambil semua data Wali Kelas untuk data dropdown filter di View
+    $wali_kelas = WaliKelas::all();
+    
+    // 4. DIUBAH: Mengambil data untuk pilihan saat tambah/edit kelas. 
+    // Kita langsung ambil dari tabel wali_kelas yang sudah pasti berisi guru-guru wali kelas.
+    $gurus = WaliKelas::orderBy('nama_wali', 'asc')->get();
+    
+    // 5. DIUBAH: Sesuaikan isi compact() dengan variabel baru Anda
+    return view('admin.kelas.index', compact('kelas', 'wali_kelas', 'gurus'));
+}
 
     public function create()
-    {
-        $jurusans = Jurusan::all();
-        
-        $gurus = DB::table('users')
-            ->where('role', 0)
-            ->select('id', 'name', 'email')
-            ->orderBy('name', 'asc')
-            ->get();
-        
-        return view('admin.kelas.create', compact('jurusans', 'gurus'));
-    }
+{
+    // 1. DIUBAH: Mengambil semua data Wali Kelas untuk pilihan di form
+    $wali_kelas = WaliKelas::all();
+    
+    // 2. DIUBAH: Mengambil data guru langsung dari tabel wali_kelas yang diurutkan abjad
+    $gurus = WaliKelas::orderBy('nama_wali', 'asc')->get();
+    
+    // 3. DIUBAH: Kirim variabel $wali_kelas ke file view
+    return view('admin.kelas.create', compact('wali_kelas', 'gurus'));
+}
 
     public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'jurusan_id' => 'required|exists:jurusans,id',
-            'nama_kelas' => 'required|string|max:255',
-            'tingkat' => 'required|integer|in:1,2,3,4,5,6',
-            'kode_kelas' => 'required|string|max:20|unique:kelas,kode_kelas',
-            'wali_kelas_id' => 'nullable|exists:users,id',
-        ], [
-            'jurusan_id.required' => 'Jurusan wajib dipilih',
-            'nama_kelas.required' => 'Nama kelas wajib diisi',
-            'tingkat.required' => 'Tingkat wajib dipilih',
-            'kode_kelas.required' => 'Kode kelas wajib diisi',
-            'kode_kelas.unique' => 'Kode kelas sudah digunakan',
-        ]);
+{
+    $validated = $request->validate([
+       
+        'wali_id'     => 'required|exists:wali_kelas,id',
+        'nama_kelas'  => 'required|string|max:255',
+        'tingkat'     => 'required|integer|in:1,2,3,4,5,6',
+        'kode_kelas'  => 'required|string|max:20|unique:kelas,kode_kelas',
+      
+    ], [
+      
+        'wali_id.required'    => 'Wali Kelas wajib dipilih',
+        'wali_id.exists'      => 'Wali Kelas yang dipilih tidak valid',
+        'nama_kelas.required' => 'Nama kelas wajib diisi',
+        'tingkat.required'    => 'Tingkat wajib dipilih',
+        'kode_kelas.required' => 'Kode kelas wajib diisi',
+        'kode_kelas.unique'   => 'Kode kelas sudah digunakan',
+    ]);
 
-        Kelas::create($validated);
+    // 4. Proses simpan data ke tabel 'kelas' menggunakan array yang sudah tervalidasi
+    Kelas::create($validated);
 
-        return redirect()->route('admin.kelas.index')
-            ->with('success', 'Kelas berhasil ditambahkan');
-    }
+    return redirect()->route('admin.kelas.index')
+        ->with('success', 'Kelas berhasil ditambahkan');
+}
 
     public function show(Kelas $kela)
-    {
-        if (request()->wantsJson()) {
-            $kela->load(['jurusan', 'waliKelas']);
-            
-            $siswaData = DB::table('users')
-                ->where('kelas_id', $kela->id)
-                ->where('role', 2)
-                ->select('id', 'name', 'nis')
-                ->orderBy('nis', 'asc')
-                ->get();
-            
-            return response()->json([
-                'success' => true,
-                'kelas' => [
-                    'id' => $kela->id,
-                    'nama_kelas' => $kela->nama_kelas,
-                    'kode_kelas' => $kela->kode_kelas,
-                    'tingkat' => $kela->tingkat,
-                    'jurusan' => [
-                        'nama_jurusan' => $kela->jurusan->nama_jurusan,
-                        'kode_jurusan' => $kela->jurusan->kode_jurusan,
-                    ],
-                    'wali_kelas' => $kela->waliKelas ? [
-                        'name' => $kela->waliKelas->name,
-                        'email' => $kela->waliKelas->email,
-                    ] : null,
-                    'siswa_count' => $siswaData->count(),
-                    'siswa' => $siswaData->map(function($siswa) {
-                        return [
-                            'id' => $siswa->id,
-                            'name' => $siswa->name,
-                            'nis' => $siswa->nis ?? '-',
-                        ];
-                    }),
-                ]
-            ]);
-        }
-
-        $kela->load(['jurusan', 'waliKelas', 'siswa']);
-        return view('admin.kelas.show', compact('kela'));
-    }
-
-    public function edit(Kelas $kela)
-    {
-        if (request()->wantsJson()) {
-            $gurus = DB::table('users')
-                ->where('role', 0)
-                ->select('id', 'name', 'email')
-                ->orderBy('name', 'asc')
-                ->get();
-            
-            return response()->json([
-                'success' => true,
-                'kelas' => $kela,
-                'jurusans' => Jurusan::all(),
-                'gurus' => $gurus,
-            ]);
-        }
-
-        $jurusans = Jurusan::all();
+{
+    if (request()->wantsJson()) {
+      
+        $kela->load(['waliKelas']);
         
-        $gurus = DB::table('users')
-            ->where('role', 0)
-            ->select('id', 'name', 'email')
-            ->orderBy('name', 'asc')
+        // Ambil data siswa yang berada di kelas ini
+        $siswaData = DB::table('users')
+            ->where('kelas_id', $kela->id)
+            ->where('role', 2)
+            ->select('id', 'name', 'nis')
+            ->orderBy('nis', 'asc')
             ->get();
         
-        return view('admin.kelas.edit', compact('kela', 'jurusans', 'gurus'));
-    }
-
-    public function update(Request $request, Kelas $kela)
-    {
-        $validated = $request->validate([
-            'jurusan_id' => 'required|exists:jurusans,id',
-            'nama_kelas' => 'required|string|max:255',
-            'tingkat' => 'required|integer|in:1,2,3,4,5,6',
-            'kode_kelas' => 'required|string|max:20|unique:kelas,kode_kelas,' . $kela->id,
-            'wali_kelas_id' => 'nullable|exists:users,id',
-        ], [
-            'jurusan_id.required' => 'Jurusan wajib dipilih',
-            'nama_kelas.required' => 'Nama kelas wajib diisi',
-            'tingkat.required' => 'Tingkat wajib dipilih',
-            'kode_kelas.required' => 'Kode kelas wajib diisi',
-            'kode_kelas.unique' => 'Kode kelas sudah digunakan',
+        return response()->json([
+            'success' => true,
+            'kelas' => [
+                'id'          => $kela->id,
+                'nama_kelas'  => $kela->nama_kelas,
+                'kode_kelas'  => $kela->kode_kelas,
+                'tingkat'     => $kela->tingkat,
+                
+                // 2. DIUBAH: Data wali_kelas sekarang diambil dari tabel wali_kelas baru Anda
+                'wali_kelas' => $kela->waliKelas ? [
+                    'id'        => $kela->waliKelas->id,
+                    'kode_wali' => $kela->waliKelas->kode_wali,
+                    'nama_wali' => $kela->waliKelas->nama_wali,
+                    'deskripsi' => $kela->waliKelas->deskripsi,
+                ] : null,
+                
+                'siswa_count' => $siswaData->count(),
+                'siswa' => $siswaData->map(function($siswa) {
+                    return [
+                        'id'   => $siswa->id,
+                        'name' => $siswa->name,
+                        'nis'  => $siswa->nis ?? '-',
+                    ];
+                }),
+            ]
         ]);
-
-        $kela->update($validated);
-
-        return redirect()->route('admin.kelas.index')
-            ->with('success', 'Kelas berhasil diperbarui');
     }
+
+    // 3. DIUBAH: Sesuaikan eager loading untuk view biasa (non-AJAX)
+    $kela->load(['waliKelas', 'siswa']);
+    
+    return view('admin.kelas.show', compact('kela'));
+}
+
+    public function edit(Kelas $kela)
+{
+    if (request()->wantsJson()) {
+        // 1. DIUBAH: Ambil data guru langsung dari tabel wali_kelas baru
+        $gurus = WaliKelas::orderBy('nama_wali', 'asc')->get();
+        
+        return response()->json([
+            'success'  => true,
+            'kelas'    => $kela,
+            'wali_kelas' => WaliKelas::all(), 
+            'gurus'    => $gurus,
+        ]);
+    }
+
+    // 3. DIUBAH: Penyesuaian variabel untuk dilempar ke halaman view edit biasa
+    $wali_kelas = WaliKelas::all();
+    $gurus = WaliKelas::orderBy('nama_wali', 'asc')->get();
+    
+    return view('admin.kelas.edit', compact('kela', 'wali_kelas', 'gurus'));
+}
+    public function update(Request $request, Kelas $kela)
+{
+    $validated = $request->validate([
+      
+        'wali_id'     => 'required|exists:wali_kelas,id',
+        'nama_kelas'  => 'required|string|max:255',
+        'tingkat'     => 'required|integer|in:1,2,3,4,5,6',
+        // Validasi unik tetap mengecualikan ID kelas saat ini agar bisa disimpan dengan aman
+        'kode_kelas'  => 'required|string|max:20|unique:kelas,kode_kelas,' . $kela->id,
+        // 2. DIUBAH: 'wali_kelas_id' dihapus dari daftar validasi
+    ], [
+        // 3. DIUBAH: Sesuaikan pesan error mengikuti field baru Anda
+        'wali_id.required'    => 'Wali Kelas wajib dipilih',
+        'wali_id.exists'      => 'Wali Kelas yang dipilih tidak valid',
+        'nama_kelas.required' => 'Nama kelas wajib diisi',
+        'tingkat.required'    => 'Tingkat wajib dipilih',
+        'kode_kelas.required' => 'Kode kelas wajib diisi',
+        'kode_kelas.unique'   => 'Kode kelas sudah digunakan',
+    ]);
+
+    // 4. Eksekusi pembaruan data pada record kelas terpilih
+    $kela->update($validated);
+
+    return redirect()->route('admin.kelas.index')
+        ->with('success', 'Kelas berhasil diperbarui');
+}
 
     public function destroy(Kelas $kela)
     {
@@ -393,48 +403,53 @@ class KelasController extends Controller
     }
 
     public function listAll()
-    {
-        try {
-            $kelas = DB::table('kelas')
-                ->join('jurusans', 'kelas.jurusan_id', '=', 'jurusans.id')
-                ->select(
-                    'kelas.id',
-                    'kelas.nama_kelas',
-                    'kelas.kode_kelas',
-                    'kelas.tingkat',
-                    'jurusans.kode_jurusan'
-                )
-                ->orderBy('kelas.tingkat', 'asc')
-                ->orderBy('kelas.nama_kelas', 'asc')
-                ->get();
+{
+    try {
+       
+        $kelas = DB::table('kelas')
+            ->join('wali_kelas', 'kelas.wali_id', '=', 'wali_kelas.id')
+            ->select(
+                'kelas.id',
+                'kelas.nama_kelas',
+                'kelas.kode_kelas',
+                'kelas.tingkat',
+                'wali_kelas.kode_wali', // Mengambil kode wali kelas
+                'wali_kelas.nama_wali'  // Ditambahkan jika front-end butuh menampilkan nama wali kelas
+            )
+            ->orderBy('kelas.tingkat', 'asc')
+            ->orderBy('kelas.nama_kelas', 'asc')
+            ->get();
 
-            $kelasWithCount = $kelas->map(function($k) {
-                $siswaCount = DB::table('users')
-                    ->where('kelas_id', $k->id)
-                    ->where('role', 2)
-                    ->count();
-                
-                return [
-                    'id' => $k->id,
-                    'nama_kelas' => $k->nama_kelas,
-                    'kode_kelas' => $k->kode_kelas,
-                    'tingkat' => $k->tingkat,
-                    'kode_jurusan' => $k->kode_jurusan,
-                    'siswa_count' => $siswaCount,
-                ];
-            });
+        // Mapping data untuk menghitung jumlah siswa per kelas secara real-time
+        $kelasWithCount = $kelas->map(function($k) {
+            $siswaCount = DB::table('users')
+                ->where('kelas_id', $k->id)
+                ->where('role', 2)
+                ->count();
+            
+            return [
+                'id'          => $k->id,
+                'nama_kelas'  => $k->nama_kelas,
+                'kode_kelas'  => $k->kode_kelas,
+                'tingkat'     => $k->tingkat,
+               
+                'kode_wali'   => $k->kode_wali, 
+                'nama_wali'   => $k->nama_wali, // Menyertakan nama wali di response JSON
+                'siswa_count' => $siswaCount,
+            ];
+        });
 
-            return response()->json([
-                'success' => true,
-                'kelas' => $kelasWithCount
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal memuat daftar kelas: ' . $e->getMessage()
-            ], 500);
-        }
+        return response()->json([
+            'success' => true,
+            'kelas'   => $kelasWithCount
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Gagal memuat daftar kelas: ' . $e->getMessage()
+        ], 500);
     }
+}
 
     public function allSiswa()
     {

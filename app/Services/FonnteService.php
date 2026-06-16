@@ -254,7 +254,7 @@ class FonnteService
         }
 
         try {
-            $presensi->load(['siswa', 'kelas.jurusan']);
+            $presensi->load(['siswa', 'kelas.waliKelas']);
             
             $siswa = $presensi->siswa;
             $kelas = $presensi->kelas;

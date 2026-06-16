@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
     const csrfToken = document.querySelector('input[name="_token"]').value;
 
-    const showButtons = document.querySelectorAll('.btn-show-jurusan');
+    const showButtons = document.querySelectorAll('.btn-show-wali-kelas');
     showButtons.forEach(button => {
         button.addEventListener('click', function() {
-            const jurusanId = this.getAttribute('data-jurusan-id');
-            const modal = new bootstrap.Modal(document.getElementById('showJurusanModal'));
-            const content = document.getElementById('showJurusanContent');
+            const waliKelasId = this.getAttribute('data-wali-kelas-id');
+            const modal = new bootstrap.Modal(document.getElementById('showWaliKelasModal'));
+            const content = document.getElementById('showWaliKelasContent');
             
             content.innerHTML = `
                 <div class="text-center py-5">
@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             modal.show();
             
-            fetch(`/admin/jurusan/${jurusanId}`, {
+            fetch(`/admin/wali-kelas/${waliKelasId}`, {
                 method: 'GET',
                 headers: {
                     'X-CSRF-TOKEN': csrfToken,
@@ -27,11 +27,11 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    const jurusan = data.jurusan;
+                    const waliKelas = data.waliKelas;
                     
                     let kelasHtml = '';
-                    if (jurusan.kelas && jurusan.kelas.length > 0) {
-                        kelasHtml = jurusan.kelas.map(kelas => `
+                   if (waliKelas.kelas && waliKelas.kelas.length > 0) {
+                       kelasHtml = waliKelas.kelas.map(kelas => `
                             <div class="col-md-6">
                                 <div class="card border">
                                     <div class="card-body">
@@ -58,7 +58,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="col-12">
                                 <div class="alert alert-info mb-0">
                                     <i class="bi bi-info-circle me-2"></i>
-                                    Belum ada kelas di jurusan ini
+                                   'Belum ada kelas yang diampu oleh wali kelas ini'
                                 </div>
                             </div>
                         `;
@@ -73,15 +73,15 @@ document.addEventListener('DOMContentLoaded', function() {
                                         <div class="row align-items-center">
                                             <div class="col-auto">
                                                 <div class="avatar avatar-xl bg-primary text-white">
-                                                    <span class="fs-3 fw-bold">${jurusan.kode_jurusan}</span>
+                                                    <span class="fs-3 fw-bold">${waliKelas.kode_wali}</span>
                                                 </div>
                                             </div>
                                             <div class="col">
-                                                <h4 class="mb-1">${jurusan.nama_jurusan}</h4>
-                                                <p class="text-muted mb-0">
-                                                    <i class="bi bi-building me-2"></i>
-                                                    ${jurusan.kelas_count || 0} Kelas Terdaftar
-                                                </p>
+                                              <h4 class="mb-1">${waliKelas.nama_wali}</h4>
+                                              <p class="text-muted mb-0">
+                                                    <i class="bi bi-door-open me-2"></i>
+                                                    ${waliKelas.kelas_count || 0} Kelas Diampu
+                                             </p>
                                             </div>
                                         </div>
                                     </div>
@@ -89,12 +89,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             </div>
 
                             <!-- Deskripsi -->
-                            ${jurusan.deskripsi ? `
+                            ${waliKelas.deskripsi ? `
                                 <div class="col-12">
                                     <h6 class="mb-2">
                                         <i class="bi bi-info-circle me-2 text-primary"></i>Deskripsi
                                     </h6>
-                                    <p class="text-muted mb-0">${jurusan.deskripsi}</p>
+                                    <p class="text-muted mb-0">${waliKelas.deskripsi}</p>
                                 </div>
                             ` : ''}
 
@@ -102,7 +102,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             <div class="col-12">
                                 <h6 class="mb-3">
                                     <i class="bi bi-building me-2 text-primary"></i>
-                                    Daftar Kelas (${jurusan.kelas_count || 0})
+                                    Daftar Kelas (${waliKelas.kelas_count || 0})
                                 </h6>
                                 <div class="row g-3">
                                     ${kelasHtml}
@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                     <div class="row text-muted small">
                                         <div class="col-md-6">
                                             <i class="bi bi-calendar-plus me-2"></i>
-                                            <strong>Dibuat:</strong> ${new Date(jurusan.created_at).toLocaleDateString('id-ID', {
+                                            <strong>Dibuat:</strong> ${new Date(waliKelas.created_at).toLocaleDateString('id-ID', {
                                                 day: 'numeric',
                                                 month: 'long',
                                                 year: 'numeric',
@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                         </div>
                                         <div class="col-md-6">
                                             <i class="bi bi-calendar-check me-2"></i>
-                                            <strong>Diperbarui:</strong> ${new Date(jurusan.updated_at).toLocaleDateString('id-ID', {
+                                            <strong>Diperbarui:</strong> ${new Date(waliKelas.updated_at).toLocaleDateString('id-ID', {
                                                 day: 'numeric',
                                                 month: 'long',
                                                 year: 'numeric',
@@ -145,22 +145,22 @@ document.addEventListener('DOMContentLoaded', function() {
                 content.innerHTML = `
                     <div class="alert alert-danger">
                         <i class="bi bi-exclamation-triangle me-2"></i>
-                        Gagal memuat data jurusan
+                        text: 'Gagal memuat data wali kelas',
                     </div>
                 `;
             });
         });
     });
 
-    const editButtons = document.querySelectorAll('.btn-edit-jurusan');
+    const editButtons = document.querySelectorAll('.btn-edit-wali-kelas');
     editButtons.forEach(button => {
         button.addEventListener('click', function() {
-            const jurusanId = this.getAttribute('data-jurusan-id');
-            const modal = new bootstrap.Modal(document.getElementById('editJurusanModal'));
-            const form = document.getElementById('editJurusanForm');
-            const loading = document.getElementById('editJurusanLoading');
-            const formContent = document.getElementById('editJurusanFormContent');
-            const submitBtn = document.getElementById('editJurusanSubmitBtn');
+            const waliKelasId = this.getAttribute('data-wali-kelas-id');
+            const modal = new bootstrap.Modal(document.getElementById('editWaliKelasModal'));
+            const form = document.getElementById('editWaliKelasForm');
+            const loading = document.getElementById('editWaliKelasLoading');
+            const formContent = document.getElementById('editWaliKelasFormContent');
+            const submitBtn = document.getElementById('editWaliKelasSubmitBtn');
             
             loading.style.display = 'block';
             formContent.style.display = 'none';
@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             modal.show();
             
-            fetch(`/admin/jurusan/${jurusanId}/edit`, {
+            fetch(`/admin/wali-kelas/${waliKelasId}/edit`, {
                 method: 'GET',
                 headers: {
                     'X-CSRF-TOKEN': csrfToken,
@@ -179,13 +179,13 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    const jurusan = data.jurusan;
+                    const waliKelas = data.waliKelas;
                     
-                    form.action = `/admin/jurusan/${jurusan.id}`;
+                    form.action = `/admin/wali-kelas/${waliKelas.id}`;
                     
-                    document.getElementById('edit_kode_jurusan').value = jurusan.kode_jurusan;
-                    document.getElementById('edit_nama_jurusan').value = jurusan.nama_jurusan;
-                    document.getElementById('edit_deskripsi').value = jurusan.deskripsi || '';
+                    document.getElementById('edit_kode_wali').value = waliKelas.kode_wali;
+                    document.getElementById('edit_nama_wali').value = waliKelas.nama_wali;
+                    document.getElementById('edit_deskripsi').value = waliKelas.deskripsi || '';
                     
                     loading.style.display = 'none';
                     formContent.style.display = 'block';
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 Swal.fire({
                     icon: 'error',
                     title: 'Gagal!',
-                    text: 'Gagal memuat data jurusan',
+                    text: 'Gagal memuat data wali kelas',
                     confirmButtonColor: '#dc3545'
                 });
                 modal.hide();
@@ -210,11 +210,11 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', function(e) {
             e.preventDefault();
             const form = this.closest('.delete-form');
-            const jurusanName = this.getAttribute('data-name');
+            const waliKelasName = this.getAttribute('data-name');
             
             Swal.fire({
-                title: 'Hapus Jurusan?',
-                html: `Apakah Anda yakin ingin menghapus<br><strong>${jurusanName}</strong>?`,
+                title: 'Hapus Wali Kelas?',
+                html: `Apakah Anda yakin ingin menghapus<br><strong>${waliKelasName}</strong>?`,
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#dc3545',
@@ -236,18 +236,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    const createForm = document.getElementById('createJurusanForm');
+    const createForm = document.getElementById('createWaliKelasForm');
     if (createForm) {
         createForm.addEventListener('submit', function(e) {
-            const kodeJurusan = this.querySelector('input[name="kode_jurusan"]').value.trim();
-            const namaJurusan = this.querySelector('input[name="nama_jurusan"]').value.trim();
+           const kodeWali = this.querySelector('input[name="kode_wali"]').value.trim();
+           const namaWali = this.querySelector('input[name="nama_wali"]').value.trim();
             
-            if (!kodeJurusan || !namaJurusan) {
+            if (!kodeWali || !namaWali) {
                 e.preventDefault();
                 Swal.fire({
                     icon: 'warning',
                     title: 'Peringatan!',
-                    text: 'Kode dan Nama Jurusan wajib diisi',
+                    text: 'Kode dan Nama Wali Kelas wajib diisi',
                     confirmButtonColor: '#0d6efd'
                 });
                 return false;
@@ -255,18 +255,18 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    const editForm = document.getElementById('editJurusanForm');
+    const editForm = document.getElementById('editWaliKelasForm');
     if (editForm) {
         editForm.addEventListener('submit', function(e) {
-            const kodeJurusan = document.getElementById('edit_kode_jurusan').value.trim();
-            const namaJurusan = document.getElementById('edit_nama_jurusan').value.trim();
+            const kodeWali = document.getElementById('edit_kode_wali').value.trim();
+            const namaWali = document.getElementById('edit_nama_wali').value.trim();
             
-            if (!kodeJurusan || !namaJurusan) {
+            if (!kodeWali || !namaWali) {
                 e.preventDefault();
                 Swal.fire({
                     icon: 'warning',
                     title: 'Peringatan!',
-                    text: 'Kode dan Nama Jurusan wajib diisi',
+                    text: 'Kode dan Nama Wali Kelas wajib diisi',
                     confirmButtonColor: '#0d6efd'
                 });
                 return false;
@@ -274,20 +274,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    const createModal = document.getElementById('createJurusanModal');
+    const createModal = document.getElementById('createWaliKelasModal');
     if (createModal) {
         createModal.addEventListener('hidden.bs.modal', function() {
             createForm.reset();
         });
     }
 
-    const editModal = document.getElementById('editJurusanModal');
+    const editModal = document.getElementById('editWaliKelasModal');
     if (editModal) {
         editModal.addEventListener('hidden.bs.modal', function() {
             editForm.reset();
-            document.getElementById('editJurusanLoading').style.display = 'block';
-            document.getElementById('editJurusanFormContent').style.display = 'none';
-            document.getElementById('editJurusanSubmitBtn').style.display = 'none';
+            document.getElementById('editWaliKelasLoading').style.display = 'block';
+            document.getElementById('editWaliKelasFormContent').style.display = 'none';
+            document.getElementById('editWaliKelasSubmitBtn').style.display = 'none';
         });
     }
 
@@ -304,8 +304,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    const kodeJurusanInputs = document.querySelectorAll('input[name="kode_jurusan"]');
-    kodeJurusanInputs.forEach(input => {
+    const kodeWaliInputs = document.querySelectorAll('input[name="kode_wali"]');
+    kodeWaliInputs.forEach(input => {
         input.addEventListener('input', function() {
             this.value = this.value.toUpperCase();
         });

@@ -42,7 +42,7 @@
                                 </div>
                                 <div class="small text-muted">
                                     <i class="bi bi-building me-2"></i>
-                                    {{ Auth::user()->kelas->jurusan->nama_jurusan }}
+                                    {{ Auth::user()->kelas->waliKelas->nama_wali ?? 'Belum Ditentukan' }}
                                 </div>
                             </div>
                         @else

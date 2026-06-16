@@ -116,20 +116,20 @@
                             <div class="col-12 col-sm-6 col-md-3">
                                 <select class="form-select form-select-sm" id="filterKelas">
                                     <option value="all">Semua Kelas</option>
-                                    @foreach($jurusans as $jurusan)
-                                        @foreach($jurusan->kelas as $kelas)
+                                    @foreach($wali_kelas as $wali)
+                                        @foreach($wali->kelas as $kelas)
                                             <option value="{{ $kelas->id }}">{{ $kelas->nama_kelas }}</option>
                                         @endforeach
                                     @endforeach
                                 </select>
                             </div>
 
-                            <!-- Filter Jurusan -->
-                            <div class="col-12 col-sm-6 col-md-3">
-                                <select class="form-select form-select-sm" id="filterJurusan">
-                                    <option value="all">Semua Jurusan</option>
-                                    @foreach($jurusans as $jurusan)
-                                        <option value="{{ $jurusan->id }}">{{ $jurusan->nama_jurusan }}</option>
+                            <!-- Filter Wali Kelas -->
+                           <div class="col-12 col-sm-6 col-md-3">
+                                <select class="form-select form-select-sm" id="filterWaliKelas">
+                                    <option value="all">Semua Wali Kelas</option>
+                                    @foreach($wali_kelas as $wali)
+                                        <option value="{{ $wali->id }}">{{ $wali->nama_wali }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -149,14 +149,14 @@
             </div>
         </div>
 
-        <!-- Tabel Jurusan dan Kelas -->
+        <!-- Tabel Wali Kelas dan Kelas -->
         <div class="row mt-6">
             <div class="col-md-12 col-12">
                 <div class="card">
                     <div class="card-header bg-white py-4">
                         <div class="d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center gap-2">
-                            <h4 class="mb-0">Data Jurusan dan Kelas</h4>
-                            <a href="{{ route('admin.jurusan.index') }}" class="btn btn-primary btn-sm">Lihat Semua</a>
+                            <h4 class="mb-0">Data Wali Kelas dan Kelas</h4>
+                            <a href="{{ route('admin.wali-kelas.index') }}" class="btn btn-primary btn-sm">Lihat Semua</a>
                         </div>
                     </div>
                     <div class="card-body">
@@ -166,23 +166,23 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th scope="col">No</th>
-                                        <th scope="col">Nama Jurusan</th>
+                                        <th scope="col">Nama Wali Kelas</th>
                                         <th scope="col">Kode</th>
                                         <th scope="col" class="text-center">Jml Kelas</th>
                                         <th scope="col">Kelas</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse($jurusans as $index => $jurusan)
+                                   @forelse($wali_kelas as $index => $wali)
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
-                                        <td>{{ $jurusan->nama_jurusan }}</td>
-                                        <td><span class="badge bg-primary">{{ $jurusan->kode_jurusan }}</span></td>
-                                        <td class="text-center">{{ $jurusan->kelas_count }}</td>
+                                        <td>{{ $wali->nama_wali }}</td>
+                                        <td><span class="badge bg-primary">{{ $wali->kode_wali }}</span></td>
+                                        <td class="text-center">{{ $wali->kelas_count }}</td>
                                         <td>
-                                            @if($jurusan->kelas->count() > 0)
+                                            @if($wali->kelas->count() > 0)
                                                 <div class="d-flex flex-wrap gap-1">
-                                                    @foreach($jurusan->kelas as $kelas)
+                                                    @foreach($wali->kelas as $kelas)
                                                         <span class="badge bg-info">
                                                             {{ $kelas->nama_kelas }} ({{ $kelas->siswa_count }})
                                                         </span>
@@ -195,7 +195,7 @@
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="5" class="text-center">Belum ada data jurusan</td>
+                                        <td colspan="5" class="text-center">Belum ada data Wali Kelas</td>
                                     </tr>
                                     @endforelse
                                 </tbody>
@@ -204,22 +204,22 @@
 
                         <!-- Mobile Card View -->
                         <div class="d-md-none">
-                            @forelse($jurusans as $index => $jurusan)
+                           @forelse($wali_kelas as $index => $wali)
                             <div class="card mb-3 shadow-sm">
                                 <div class="card-body">
                                     <div class="d-flex justify-content-between align-items-start mb-2">
                                         <div>
-                                            <h5 class="card-title mb-1">{{ $jurusan->nama_jurusan }}</h5>
-                                            <span class="badge bg-primary">{{ $jurusan->kode_jurusan }}</span>
+                                            <h5 class="card-title mb-1">{{ $wali->nama_wali }}</h5>
+                                            <span class="badge bg-primary">{{ $wali->kode_wali }}</span>
                                         </div>
-                                        <span class="badge bg-secondary">{{ $jurusan->kelas_count }} Kelas</span>
+                                        <span class="badge bg-secondary">{{ $wali->kelas_count }} Kelas</span>
                                     </div>
                                     
-                                    @if($jurusan->kelas->count() > 0)
+                                    @if($wali->kelas->count() > 0)
                                         <div class="mt-3">
                                             <h6 class="text-muted mb-2" style="font-size: 0.875rem;">Daftar Kelas:</h6>
                                             <div class="d-flex flex-wrap gap-2">
-                                                @foreach($jurusan->kelas as $kelas)
+                                               @foreach($wali->kelas as $kelas)
                                                     <span class="badge bg-info">
                                                         {{ $kelas->nama_kelas }} <span class="text-white">({{ $kelas->siswa_count }} siswa)</span>
                                                     </span>
@@ -235,7 +235,7 @@
                             </div>
                             @empty
                             <div class="text-center py-4 text-muted">
-                                Belum ada data jurusan
+                                Belum ada data Wali Kelas
                             </div>
                             @endforelse
                         </div>
@@ -266,7 +266,7 @@
             min-height: 300px !important;
         }
         
-        /* Mobile card view for jurusan */
+        
         .card .card-body {
             padding: 1rem;
         }
@@ -546,14 +546,14 @@
             function fetchChartData() {
                 const period = document.getElementById('filterPeriode').value;
                 const kelasId = document.getElementById('filterKelas').value;
-                const jurusanId = document.getElementById('filterJurusan').value;
+                const waliId = document.getElementById('filterWaliKelas').value;
                 
                 const chartContainer = document.querySelector("#attendanceChart");
                 if (chartContainer) {
                     chartContainer.style.opacity = '0.5';
                 }
                 
-                fetch(`${baseUrl}/chart-data?period=${period}&kelas_id=${kelasId}&jurusan_id=${jurusanId}`)
+                fetch(`${baseUrl}/chart-data?period=${period}&kelas_id=${kelasId}&wali_id=${waliId}`)
                     .then(response => {
                         if (!response.ok) {
                             throw new Error('Network response was not ok');
@@ -578,12 +578,12 @@
             // Event listeners
             document.getElementById('filterPeriode').addEventListener('change', fetchChartData);
             document.getElementById('filterKelas').addEventListener('change', fetchChartData);
-            document.getElementById('filterJurusan').addEventListener('change', fetchChartData);
+            document.getElementById('filterWaliKelas').addEventListener('change', fetchChartData);
             
             document.getElementById('resetFilter').addEventListener('click', function() {
                 document.getElementById('filterPeriode').value = 'week';
                 document.getElementById('filterKelas').value = 'all';
-                document.getElementById('filterJurusan').value = 'all';
+                document.getElementById('filterWaliKelas').value = 'all';
                 createChart('week', chartDataFromBackend.week);
             });
         });

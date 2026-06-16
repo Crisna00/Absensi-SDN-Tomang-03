@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Kelas;
-use App\Models\Jurusan;
+use App\Models\WaliKelas;
 use App\Models\Presensi;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -43,7 +43,7 @@ class HomeController extends Controller
             'admin_completed' => User::whereRaw('role = ?', [1])->where('status', 'active')->count(),
         ];
 
-        $jurusans = Jurusan::withCount('kelas')
+        $wali_kelas = WaliKelas::withCount('kelas')
             ->with(['kelas' => function($query) {
                 $query->withCount('siswa');
             }])
@@ -51,7 +51,7 @@ class HomeController extends Controller
 
         $chartData = $this->getChartData('week');
 
-        return view('admin.home', compact('stats', 'jurusans', 'chartData'));
+        return view('admin.home', compact('stats', 'wali_kelas', 'chartData'));
     }
 
     public function guruHome() 
@@ -70,7 +70,7 @@ class HomeController extends Controller
             'admin_completed' => User::whereRaw('role = ?', [1])->where('status', 'active')->count(),
         ];
 
-        $jurusans = Jurusan::withCount('kelas')
+        $wali_kelas = WaliKelas::withCount('kelas')
             ->with(['kelas' => function($query) {
                 $query->withCount('siswa');
             }])
@@ -78,7 +78,7 @@ class HomeController extends Controller
 
         $chartData = $this->getChartData('week');
 
-        return view('guru.home', compact('stats', 'jurusans', 'chartData')); 
+        return view('guru.home', compact('stats', 'wali_kelas', 'chartData')); 
     }
 
     public function siswaHome()
@@ -90,14 +90,14 @@ class HomeController extends Controller
     {
         $period = $request->get('period', 'week');
         $kelasId = $request->get('kelas_id', 'all');
-        $jurusanId = $request->get('jurusan_id', 'all');
+       $waliId = $request->get('wali_id', 'all');
 
-        $chartData = $this->getChartData($period, $kelasId, $jurusanId);
+        $chartData = $this->getChartData($period, $kelasId, $waliId);
 
         return response()->json($chartData);
     }
 
-    private function getChartData($period = 'week', $kelasId = 'all', $jurusanId = 'all')
+    private function getChartData($period = 'week', $kelasId = 'all', $waliId = 'all')
     {
         $dates = [];
         $labels = [];
@@ -171,9 +171,9 @@ class HomeController extends Controller
                 $baseQuery->where('kelas_id', $kelasId);
             }
 
-            if ($jurusanId !== 'all' && !empty($jurusanId)) {
-                $baseQuery->whereHas('kelas', function($q) use ($jurusanId) {
-                    $q->where('jurusan_id', $jurusanId);
+            if ($waliId !== 'all' && !empty($waliId)) {
+                $baseQuery->whereHas('kelas', function($q) use ($waliId) {
+                    $q->where('wali_id', $waliId);
                 });
             }
 

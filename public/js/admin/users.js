@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (user.kelas) {
                             kelasInfo = `<tr>
                                 <td class="fw-semibold text-muted">Kelas</td>
-                                <td>${user.kelas.nama_kelas} - ${user.kelas.jurusan.nama_jurusan}</td>
+                                <td>${user.kelas.nama_kelas} - ${user.kelas.wali_kelas.nama_wali}</td>
                             </tr>`;
                         } else {
                             kelasInfo = `<tr>

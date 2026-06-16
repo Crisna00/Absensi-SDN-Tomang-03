@@ -103,15 +103,15 @@
                     <form action="{{ route('admin.presensi.index') }}" method="GET">
                         <div class="row g-3 align-items-end">
                             <div class="col-md-4">
-                                <label class="form-label fw-semibold small">Filter Jurusan</label>
-                                <select name="jurusan_id" class="form-select">
-                                    <option value="">Semua Jurusan</option>
-                                    @foreach($jurusans as $jurusan)
-                                        <option value="{{ $jurusan->id }}" {{ request('jurusan_id') == $jurusan->id ? 'selected' : '' }}>
-                                            {{ $jurusan->nama_jurusan }}
+                                <label class="form-label fw-semibold small">Filter Wali Kelas</label>
+                                      <select name="wali_id" id="filterWaliKelas" class="form-select">
+                                        <option value="">Semua Wali Kelas</option>
+                                            @foreach($wali_kelas as $wali)
+                                        <option value="{{ $wali->id }}" {{ request('wali_id') == $wali->id ? 'selected' : '' }}>
+                                                    {{ $wali->nama_wali }}
                                         </option>
-                                    @endforeach
-                                </select>
+                                            @endforeach
+                                        </select>
                             </div>
                             
                             <div class="col-md-6">
@@ -149,7 +149,7 @@
                                             <h5 class="mb-1 text-dark">{{ $kelas->nama_kelas }}</h5>
                                             <p class="text-muted small mb-0">
                                                 <i class="bi bi-mortarboard me-1"></i>
-                                                {{ $kelas->jurusan->nama_jurusan }}
+                                                {{ $kelas->waliKelas->nama_wali }}
                                             </p>
                                         </div>
                                         <div class="icon-shape icon-sm bg-primary-soft text-primary rounded">

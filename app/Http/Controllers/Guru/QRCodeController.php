@@ -16,7 +16,7 @@ class QRCodeController extends Controller
 {
     public function index(Request $request)
     {
-        $query = PresensiSession::with(['kelas.jurusan', 'creator', 'qrCode'])
+        $query = PresensiSession::with(['kelas.waliKelas', 'creator', 'qrCode'])
             ->withCount('presensis');
 
         if ($request->filled('kelas_id')) {
@@ -32,14 +32,14 @@ class QRCodeController extends Controller
         }
 
         $sessions = $query->latest()->paginate(10);
-        $kelas = Kelas::with('jurusan')->withCount('siswa')->get();
+        $kelas = Kelas::with('waliKelas')->withCount('siswa')->get();
 
         return view('guru.qrcode.index', compact('sessions', 'kelas'));
     }
 
     public function create()
     {
-        $kelas = Kelas::with('jurusan')->withCount('siswa')->get();
+        $kelas = Kelas::with('waliKelas')->withCount('siswa')->get();
         return view('guru.qrcode.create', compact('kelas'));
     }
 
@@ -140,7 +140,7 @@ class QRCodeController extends Controller
     public function show(PresensiSession $qrcode)
     {
         try {
-            $qrcode->load(['kelas.jurusan', 'creator', 'presensis.siswa', 'qrCode']);
+           $qrcode->load(['kelas.waliKelas', 'creator', 'presensis.siswa', 'qrCode']);
             
             $qrCodeCheckinSvg = '';
             $qrCodeCheckoutSvg = '';
@@ -176,8 +176,8 @@ class QRCodeController extends Controller
                         'kelas' => [
                             'nama_kelas' => $qrcode->kelas->nama_kelas,
                             'kode_kelas' => $qrcode->kelas->kode_kelas,
-                            'jurusan' => [
-                                'nama_jurusan' => $qrcode->kelas->jurusan->nama_jurusan,
+                            'wali_kelas' => [
+                            'nama_wali' => $qrcode->kelas->waliKelas->nama_wali ?? 'Belum Ditentukan',
                             ],
                         ],
                         'tanggal' => $qrcode->tanggal->format('d M Y'),

@@ -53,13 +53,13 @@
                                     </select>
                                 </div>
                                 
-                                <div class="col-md-5">
-                                    <label class="form-label fw-semibold small">Jurusan</label>
-                                    <select name="jurusan_id" class="form-select">
-                                        <option value="">Semua Jurusan</option>
-                                        @foreach($jurusans as $jurusan)
-                                            <option value="{{ $jurusan->id }}" {{ request('jurusan_id') == $jurusan->id ? 'selected' : '' }}>
-                                                {{ $jurusan->kode_jurusan }} - {{ $jurusan->nama_jurusan }}
+                               <div class="col-md-5">
+                                    <label class="form-label fw-semibold small">Wali Kelas</label>
+                                    <select name="wali_id" class="form-select">
+                                        <option value="">Semua Wali Kelas</option>
+                                        @foreach($wali_kelas as $wali)
+                                            <option value="{{ $wali->id }}" {{ request('wali_id') == $wali->id ? 'selected' : '' }}>
+                                                {{ $wali->kode_wali }} - {{ $wali->nama_wali }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -145,7 +145,7 @@
                                     <th class="border-0 text-center align-middle" style="width: 60px;">No</th>
                                     <th class="border-0 text-center align-middle" style="width: 100px;">Tingkat</th>
                                     <th class="border-0 align-middle">Kode Kelas</th>
-                                    <th class="border-0 text-center align-middle" style="width: 120px;">Jurusan</th>
+                                    <th class="border-0 text-center align-middle" style="width: 120px;">Wali Kelas</th>
                                     <th class="border-0 text-center align-middle" style="width: 120px;">Jumlah Siswa</th>
                                     <th class="border-0 text-center align-middle" style="width: 150px;">Aksi</th>
                                 </tr>
@@ -164,7 +164,7 @@
                                         <small class="text-muted">{{ $k->nama_kelas }}</small>
                                     </td>
                                     <td class="align-middle text-center">
-                                        <span class="badge bg-info-soft text-info fs-6">{{ strtoupper($k->jurusan->kode_jurusan) }}</span>
+                                        <span class="badge bg-info-soft text-info fs-6">{{ strtoupper($k->waliKelas->kode_wali) }}</span>
                                     </td>
                                     <td class="align-middle text-center">
                                         <span class="badge bg-success-soft text-success">
@@ -206,7 +206,7 @@
                                         <div class="py-4">
                                             <i class="bi bi-inbox fs-1 text-muted"></i>
                                             <p class="text-muted mt-3 mb-0">
-                                                @if(request()->hasAny(['search', 'tingkat', 'jurusan_id']))
+                                                @if(request()->hasAny(['search', 'tingkat', 'wali_id']))
                                                     Tidak ada data kelas yang sesuai dengan filter
                                                 @else
                                                     Tidak ada data kelas
@@ -312,12 +312,24 @@
                 <div class="modal-body">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label">Jurusan <span class="text-danger">*</span></label>
-                            <select class="form-select" name="jurusan_id" required>
-                                <option value="">Pilih Jurusan</option>
-                                @foreach($jurusans as $jurusan)
-                                    <option value="{{ $jurusan->id }}">
-                                        {{ $jurusan->kode_jurusan }} - {{ $jurusan->nama_jurusan }}
+                            <label class="form-label">Wali Kelas <span class="text-danger">*</span></label>
+                            <select class="form-select" name="wali_id" required>
+                                <option value="">Pilih Wali Kelas</option>
+                                @foreach($wali_kelas as $wali)
+                                    <option value="{{ $wali->id }}">
+                                        {{ $wali->kode_wali }} - {{ $wali->nama_wali }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label">Wali Kelas <span class="text-danger">*</span></label>
+                            <select class="form-select" id="edit_wali_id" name="wali_id" required>
+                                <option value="">Pilih Wali Kelas</option>
+                                @foreach($wali_kelas as $wali)
+                                    <option value="{{ $wali->id }}">
+                                        {{ $wali->kode_wali }} - {{ $wali->nama_wali }}
                                     </option>
                                 @endforeach
                             </select>
@@ -336,11 +348,11 @@
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Kode Kelas <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="kode_kelas" placeholder="Contoh: X-TKJ-1" required>
+                            <input type="text" class="form-control" name="kode_kelas" placeholder="" required>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label">Nama Kelas <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" name="nama_kelas" placeholder="Contoh: X TKJ 1" required>
+                            <input type="text" class="form-control" name="nama_kelas" placeholder="" required>
                         </div>
                         <div class="col-12">
                             <label class="form-label">Wali Kelas</label>
@@ -404,12 +416,12 @@
                     <div id="editKelasFormContent" style="display: none;">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label class="form-label">Jurusan <span class="text-danger">*</span></label>
-                                <select class="form-select" id="edit_jurusan_id" name="jurusan_id" required>
-                                    <option value="">Pilih Jurusan</option>
-                                    @foreach($jurusans as $jurusan)
-                                        <option value="{{ $jurusan->id }}">
-                                            {{ $jurusan->kode_jurusan }} - {{ $jurusan->nama_jurusan }}
+                                <label class="form-label">Wali Kelas <span class="text-danger">*</span></label>
+                                <select class="form-select" id="edit_wali_id" name="wali_id" required>
+                                    <option value="">Pilih Wali Kelas</option>
+                                    @foreach($wali_kelas as $wali)
+                                        <option value="{{ $wali->id }}">
+                                            {{ $wali->kode_wali }} - {{ $wali->nama_wali }}
                                         </option>
                                     @endforeach
                                 </select>

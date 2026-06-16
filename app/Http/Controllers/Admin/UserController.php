@@ -14,7 +14,7 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::with(['kelas.jurusan']);
+        $query = User::with(['kelas.waliKelas']);
 
         if ($request->has('role') && $request->role !== '') {
             $query->whereRaw('role = ?', [$request->role]);
@@ -38,7 +38,7 @@ class UserController extends Controller
         }
 
         $users = $query->latest()->paginate(10);
-        $kelas = Kelas::with('jurusan')->get();
+        $kelas = Kelas::with('waliKelas')->get();
 
         return view('admin.users.index', compact('users', 'kelas'));
     }
@@ -125,7 +125,7 @@ class UserController extends Controller
     public function show($id)
     {
         try {
-            $user = User::with(['kelas.jurusan'])->findOrFail($id);
+           $user = User::with(['kelas.waliKelas'])->findOrFail($id);
             
             $userData = $user->toArray();
             $userData['role'] = $user->getRawOriginal('role');
@@ -145,7 +145,7 @@ class UserController extends Controller
     public function edit($id)
     {
         try {
-            $user = User::with(['kelas.jurusan'])->findOrFail($id);
+           $user = User::with(['kelas.waliKelas'])->findOrFail($id);
             
             $userData = $user->toArray();
             $userData['role'] = $user->getRawOriginal('role');

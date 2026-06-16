@@ -33,7 +33,7 @@
                                 <option value="">Semua Kelas</option>
                                 @foreach($kelas as $k)
                                     <option value="{{ $k->id }}">
-                                        {{ $k->nama_kelas }} - {{ $k->jurusan->nama_jurusan }}
+                                        {{ $k->nama_kelas }} - {{ $k->waliKelas->nama_wali ?? 'Tanpa Wali Kelas' }}
                                     </option>
                                 @endforeach
                             </select>

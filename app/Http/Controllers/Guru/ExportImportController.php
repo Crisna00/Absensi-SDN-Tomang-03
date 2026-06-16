@@ -15,7 +15,7 @@ class ExportImportController extends Controller
 {
     public function index()
     {
-        $kelas = Kelas::with('jurusan')->get();
+       $kelas = Kelas::with('waliKelas')->get();
         return view('guru.export-import.index', compact('kelas'));
     }
 

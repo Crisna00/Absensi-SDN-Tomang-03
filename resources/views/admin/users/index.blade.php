@@ -400,7 +400,7 @@
                                 <option value="">Pilih Kelas</option>
                                 @foreach($kelas as $item)
                                     <option value="{{ $item->id }}">
-                                        {{ $item->nama_kelas }} - {{ $item->jurusan->nama_jurusan }}
+                                        {{ $item->nama_kelas }} - {{ $item->waliKelas->nama_wali }}
                                     </option>
                                 @endforeach
                             </select>
@@ -517,7 +517,7 @@
                                     <option value="">Pilih Kelas</option>
                                     @foreach($kelas as $item)
                                         <option value="{{ $item->id }}">
-                                            {{ $item->nama_kelas }} - {{ $item->jurusan->nama_jurusan }}
+                                           {{ $item->nama_kelas }} - {{ $item->waliKelas->nama_wali }}
                                         </option>
                                     @endforeach
                                 </select>

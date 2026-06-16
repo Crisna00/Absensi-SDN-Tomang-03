@@ -644,7 +644,7 @@ function renderQRDetail(data, container, sessionId) {
                     <div>
                         <h4 class="mb-2 fw-bold">${session.kelas.nama_kelas}</h4>
                         <p class="text-muted mb-0">
-                            <i class="bi bi-mortarboard me-2"></i>${session.kelas.jurusan.nama_jurusan}
+                            <i class="bi bi-person-badge me-2"></i>${session.kelas.wali_kelas.nama_wali}
                         </p>
                     </div>
                     <div class="d-flex gap-2 flex-wrap">
