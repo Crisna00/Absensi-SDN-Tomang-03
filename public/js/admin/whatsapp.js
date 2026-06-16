@@ -89,7 +89,7 @@
         const sampleData = {
             student_name: 'Arya Dwipa Mukti',
             nis: '233307037',
-            class_name: 'XII TKJ 1',
+            class_name: '6 A',
             checkin_time: '07:15',
             checkout_time: '15:30',
             date: new Date().toLocaleDateString('id-ID', { 
