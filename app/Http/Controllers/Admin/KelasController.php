@@ -8,7 +8,6 @@ use App\Models\WaliKelas;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-
 class KelasController extends Controller
 {
     public function index(Request $request)
@@ -136,26 +135,19 @@ class KelasController extends Controller
     return view('admin.kelas.show', compact('kela'));
 }
 
-    public function edit(Kelas $kela)
+public function edit(Kelas $kela)
 {
-    if (request()->wantsJson()) {
-        // 1. DIUBAH: Ambil data guru langsung dari tabel wali_kelas baru
-        $gurus = WaliKelas::orderBy('nama_wali', 'asc')->get();
-        
-        return response()->json([
-            'success'  => true,
-            'kelas'    => $kela,
-            'wali_kelas' => WaliKelas::all(), 
-            'gurus'    => $gurus,
-        ]);
-    }
-
-    // 3. DIUBAH: Penyesuaian variabel untuk dilempar ke halaman view edit biasa
-    $wali_kelas = WaliKelas::all();
-    $gurus = WaliKelas::orderBy('nama_wali', 'asc')->get();
+    // Eager load wali kelas jika diperlukan di form
+    $kela->load('waliKelas'); 
     
-    return view('admin.kelas.edit', compact('kela', 'wali_kelas', 'gurus'));
+    return response()->json([
+        'success' => true,
+        'data'    => $kela // Menggunakan key 'data' lebih standar
+    ]);
 }
+
+
+
     public function update(Request $request, Kelas $kela)
 {
     $validated = $request->validate([
@@ -165,8 +157,7 @@ class KelasController extends Controller
         'tingkat'     => 'required|integer|in:1,2,3,4,5,6',
         // Validasi unik tetap mengecualikan ID kelas saat ini agar bisa disimpan dengan aman
         'kode_kelas'  => 'required|string|max:20|unique:kelas,kode_kelas,' . $kela->id,
-        // 2. DIUBAH: 'wali_kelas_id' dihapus dari daftar validasi
-    ], [
+       
         // 3. DIUBAH: Sesuaikan pesan error mengikuti field baru Anda
         'wali_id.required'    => 'Wali Kelas wajib dipilih',
         'wali_id.exists'      => 'Wali Kelas yang dipilih tidak valid',

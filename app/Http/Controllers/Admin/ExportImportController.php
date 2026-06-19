@@ -15,8 +15,9 @@ class ExportImportController extends Controller
 {
     public function index()
     {
-        $kelas = Kelas::with('wali_kelas')->get();
-        return view('admin.export-import.index', compact('kelas'));
+       $kelas = Kelas::with('waliKelas')->get();
+
+return view('admin.export-import.index', compact('kelas'));
     }
 
     public function exportSiswa(Request $request)

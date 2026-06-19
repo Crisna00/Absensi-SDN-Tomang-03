@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const showButtons = document.querySelectorAll('.btn-show-wali-kelas');
     showButtons.forEach(button => {
         button.addEventListener('click', function() {
-            const waliKelasId = this.getAttribute('data-wali-kelas-id');
+            const waliKelasId = this.getAttribute('data-wali-id');
             const modal = new bootstrap.Modal(document.getElementById('showWaliKelasModal'));
             const content = document.getElementById('showWaliKelasContent');
             
@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    const waliKelas = data.waliKelas;
+                    const waliKelas = data.wali_kelas;
                     
                     let kelasHtml = '';
                    if (waliKelas.kelas && waliKelas.kelas.length > 0) {
@@ -155,7 +155,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const editButtons = document.querySelectorAll('.btn-edit-wali-kelas');
     editButtons.forEach(button => {
         button.addEventListener('click', function() {
-            const waliKelasId = this.getAttribute('data-wali-kelas-id');
+            const waliKelasId = this.getAttribute('data-wali-id');
             const modal = new bootstrap.Modal(document.getElementById('editWaliKelasModal'));
             const form = document.getElementById('editWaliKelasForm');
             const loading = document.getElementById('editWaliKelasLoading');
@@ -179,8 +179,12 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    const waliKelas = data.waliKelas;
+                    const waliKelas = data.wali_kelas;
                     
+                    console.log(data);
+                    console.log(waliKelas);
+                    console.log(waliKelas.id);
+
                     form.action = `/admin/wali-kelas/${waliKelas.id}`;
                     
                     document.getElementById('edit_kode_wali').value = waliKelas.kode_wali;

@@ -56,15 +56,19 @@ Route::middleware(['auth', 'user-role:admin'])->group(function() {
         'destroy' => 'admin.users.destroy',
     ]);
     
-  Route::resource('admin/wali-kelas', WaliKelasController::class)->names([
-    'index' => 'admin.wali-kelas.index',
-    'create' => 'admin.wali-kelas.create',
-    'store' => 'admin.wali-kelas.store',
-    'show' => 'admin.wali-kelas.show',
-    'edit' => 'admin.wali-kelas.edit',
-    'update' => 'admin.wali-kelas.update',
-    'destroy' => 'admin.wali-kelas.destroy',
-]);
+  Route::resource('admin/wali-kelas', WaliKelasController::class)
+    ->parameters([
+        'wali-kelas' => 'id'
+    ])
+    ->names([
+        'index' => 'admin.wali-kelas.index',
+        'create' => 'admin.wali-kelas.create',
+        'store' => 'admin.wali-kelas.store',
+        'show' => 'admin.wali-kelas.show',
+        'edit' => 'admin.wali-kelas.edit',
+        'update' => 'admin.wali-kelas.update',
+        'destroy' => 'admin.wali-kelas.destroy',
+    ]);
     
     Route::get('admin/kelas/{kela}/available-siswa', [KelasController::class, 'availableSiswa'])
         ->name('admin.kelas.available-siswa');

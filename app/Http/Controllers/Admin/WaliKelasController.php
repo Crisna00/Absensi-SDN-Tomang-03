@@ -50,92 +50,77 @@ class WaliKelasController extends Controller
             ->with('success', 'Wali Kelas berhasil ditambahkan');
     }
 
-    public function show(WaliKelas $waliKelas)
-    {
-        $waliKelas->loadCount('kelas');
-        
-        $waliKelas->load(['kelas' => function($query) {
+    public function show($id)
+{
+    $waliKelas = WaliKelas::withCount('kelas')
+        ->with(['kelas' => function ($query) {
             $query->withCount('siswa');
-        }]);
-        
-        if (request()->ajax() || request()->wantsJson()) {
-            return response()->json([
-                'success' => true,
-                'wali_kelas' => [
-                    'id'          => $waliKelas->id,
-                    'kode_wali'   => $waliKelas->kode_wali,
-                    'nama_wali'   => $waliKelas->nama_wali,
-                    'deskripsi'   => $waliKelas->deskripsi,
-                    'kelas_count' => $waliKelas->kelas_count,
-                    'kelas'       => $waliKelas->kelas->map(function($kelas) {
-                        return [
-                            'id'          => $kelas->id,
-                            'nama_kelas'  => $kelas->nama_kelas,
-                            'siswa_count' => $kelas->siswa_count ?? 0,
-                        ];
-                    }),
-                    'created_at'  => $waliKelas->created_at,
-                    'updated_at'  => $waliKelas->updated_at,
-                ]
-            ]);
-        }
-        
-        // 2. PERBAIKAN: Mengubah nama variabel compact agar sesuai dengan parameter fungsi ($waliKelas)
-        return view('admin.wali_kelas.show', ['wali_kelas' => $waliKelas]);
-    }
+        }])
+        ->findOrFail($id);
 
-    public function edit(WaliKelas $waliKelas)
-    {
-        if (request()->ajax() || request()->wantsJson()) {
-            return response()->json([
-                'success' => true,
-                'wali_kelas' => [
-                    'id'           => $waliKelas->id,
-                    'kode_wali'    => $waliKelas->kode_wali,
-                    'nama_wali'    => $waliKelas->nama_wali,
-                    'deskripsi'    => $waliKelas->deskripsi,
-                ]
-            ]);
-        }
-        
-        // 3. PERBAIKAN: Mengubah nama variabel compact agar sesuai dengan parameter fungsi ($waliKelas)
-        return view('admin.wali_kelas.edit', ['wali_kelas' => $waliKelas]);
-    }
+    return response()->json([
+        'success' => true,
+        'wali_kelas' => [
+            'id'          => $waliKelas->id,
+            'kode_wali'   => $waliKelas->kode_wali,
+            'nama_wali'   => $waliKelas->nama_wali,
+            'deskripsi'   => $waliKelas->deskripsi,
+            'kelas_count' => $waliKelas->kelas_count,
+            'kelas'       => $waliKelas->kelas->map(function ($kelas) {
+                return [
+                    'id'          => $kelas->id,
+                    'nama_kelas'  => $kelas->nama_kelas,
+                    'siswa_count' => $kelas->siswa_count,
+                ];
+            }),
+            'created_at'  => $waliKelas->created_at,
+            'updated_at'  => $waliKelas->updated_at,
+        ]
+    ]);
+}
 
-    public function update(Request $request, WaliKelas $waliKelas)
-    {
-        $validated = $request->validate([
-            'kode_wali' => 'required|string|max:10|unique:wali_kelas,kode_wali,' . $waliKelas->id,
-            'nama_wali' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
-        ], [
-            'kode_wali.required' => 'Kode Wali Kelas wajib diisi',
-            'kode_wali.unique'   => 'Kode Wali Kelas sudah digunakan',
-            'nama_wali.required' => 'Nama Wali Kelas wajib diisi',
-        ]);
+public function edit($id)
+{
+    $waliKelas = WaliKelas::findOrFail($id);
 
-        $waliKelas->update($validated);
+    return response()->json([
+        'success' => true,
+        'wali_kelas' => [
+            'id' => $waliKelas->id,
+            'kode_wali' => $waliKelas->kode_wali,
+            'nama_wali' => $waliKelas->nama_wali,
+            'deskripsi' => $waliKelas->deskripsi,
+        ]
+    ]);
+}
+public function update(Request $request, $id)
+{
+    $waliKelas = WaliKelas::findOrFail($id);
 
+    $validated = $request->validate([
+        'kode_wali' => 'required|string|max:10|unique:wali_kelas,kode_wali,' . $waliKelas->id,
+        'nama_wali' => 'required|string|max:255',
+        'deskripsi' => 'nullable|string',
+    ]);
+
+    $waliKelas->update($validated);
+
+    return redirect()->route('admin.wali-kelas.index')
+        ->with('success', 'Wali Kelas berhasil diperbarui');
+}
+
+    public function destroy($id)
+{
+    $waliKelas = WaliKelas::findOrFail($id);
+
+    if ($waliKelas->kelas()->count() > 0) {
         return redirect()->route('admin.wali-kelas.index')
-            ->with('success', 'Wali Kelas berhasil diperbarui');
+            ->with('error', 'Wali Kelas tidak dapat dihapus karena masih mengampu ' . $waliKelas->kelas()->count() . ' kelas');
     }
 
-    public function destroy(WaliKelas $waliKelas)
-    {
-        try {
-            if ($waliKelas->kelas()->count() > 0) {
-                return redirect()->route('admin.wali-kelas.index')
-                    ->with('error', 'Wali Kelas tidak dapat dihapus karena masih mengampu ' . $waliKelas->kelas()->count() . ' kelas');
-            }
-            
-            $waliKelas->delete();
-            
-            return redirect()->route('admin.wali-kelas.index')
-                ->with('success', 'Wali Kelas berhasil dihapus');
-                
-        } catch (\Exception $e) {
-            return redirect()->route('admin.wali-kelas.index')
-                ->with('error', 'Terjadi kesalahan saat menghapus data Wali Kelas');
-        }
-    }
+    $waliKelas->delete();
+
+    return redirect()->route('admin.wali-kelas.index')
+        ->with('success', 'Wali Kelas berhasil dihapus');
+}
 }

@@ -164,7 +164,7 @@
                                         <small class="text-muted">{{ $k->nama_kelas }}</small>
                                     </td>
                                     <td class="align-middle text-center">
-                                        <span class="badge bg-info-soft text-info fs-6">{{ strtoupper($k->waliKelas->kode_wali) }}</span>
+                                        <span class="badge bg-info-soft text-info fs-6"></span>
                                     </td>
                                     <td class="align-middle text-center">
                                         <span class="badge bg-success-soft text-success">
@@ -323,17 +323,7 @@
                             </select>
                         </div>
 
-                        <div class="col-md-6">
-                            <label class="form-label">Wali Kelas <span class="text-danger">*</span></label>
-                            <select class="form-select" id="edit_wali_id" name="wali_id" required>
-                                <option value="">Pilih Wali Kelas</option>
-                                @foreach($wali_kelas as $wali)
-                                    <option value="{{ $wali->id }}">
-                                        {{ $wali->kode_wali }} - {{ $wali->nama_wali }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
+                       
                         <div class="col-md-6">
                             <label class="form-label">Tingkat <span class="text-danger">*</span></label>
                             <select class="form-select" name="tingkat" required>
@@ -446,17 +436,7 @@
                                 <label class="form-label">Nama Kelas <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="edit_nama_kelas" name="nama_kelas" required>
                             </div>
-                            <div class="col-12">
-                                <label class="form-label">Wali Kelas</label>
-                                <select class="form-select" id="edit_wali_kelas_id" name="wali_kelas_id">
-                                    <option value="">Pilih Wali Kelas (Opsional)</option>
-                                    @foreach($gurus as $guru)
-                                        <option value="{{ $guru->id }}">
-                                            {{ $guru->name }} - {{ $guru->email }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
+                            
                         </div>
                     </div>
                 </div>

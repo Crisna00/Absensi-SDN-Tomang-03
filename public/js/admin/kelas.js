@@ -343,64 +343,82 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    document.body.addEventListener('click', function(e) {
-        const editButton = e.target.closest('.btn-edit-kelas');
-        if (editButton) {
-            e.preventDefault();
-            const kelasId = editButton.getAttribute('data-kelas-id');
-            console.log('Edit kelas:', kelasId);
-            
-            const modalElement = document.getElementById('editKelasModal');
-            const modal = new bootstrap.Modal(modalElement);
-            const form = document.getElementById('editKelasForm');
-            const loading = document.getElementById('editKelasLoading');
-            const formContent = document.getElementById('editKelasFormContent');
-            const submitBtn = document.getElementById('editKelasSubmitBtn');
-            
-            loading.style.display = 'block';
-            formContent.style.display = 'none';
-            submitBtn.style.display = 'none';
-            
-            modal.show();
-            
-            fetch(`/admin/kelas/${kelasId}/edit`, {
-                method: 'GET',
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken,
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const kelas = data.kelas;
-                    
-                    form.action = `/admin/kelas/${kelas.id}`;
-                    
-                    document.getElementById('edit_wali_id').value = kelas.wali_id;
-                    document.getElementById('edit_tingkat').value = kelas.tingkat;
-                    document.getElementById('edit_kode_kelas').value = kelas.kode_kelas;
-                    document.getElementById('edit_nama_kelas').value = kelas.nama_kelas;
-                    document.getElementById('edit_wali_kelas_id').value = kelas.wali_kelas_id || '';
-                    
-                    loading.style.display = 'none';
-                    formContent.style.display = 'block';
-                    submitBtn.style.display = 'inline-block';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Gagal!',
-                    text: 'Gagal memuat data kelas',
-                    confirmButtonColor: '#dc3545'
-                });
-                modal.hide();
-            });
+document.body.addEventListener('click', function(e) {
+    const editButton = e.target.closest('.btn-edit-kelas');
+
+    if (!editButton) return;
+
+    e.preventDefault();
+
+    const kelasId = editButton.getAttribute('data-kelas-id');
+
+    const modalElement = document.getElementById('editKelasModal');
+    const modal = new bootstrap.Modal(modalElement);
+
+    const loading = document.getElementById('editKelasLoading');
+    const formContent = document.getElementById('editKelasFormContent');
+    const submitBtn = document.getElementById('editKelasSubmitBtn');
+    const editForm = document.getElementById('editKelasForm');
+
+    loading.style.display = 'block';
+    formContent.style.display = 'none';
+    submitBtn.style.display = 'none';
+
+    modal.show();
+
+    fetch(`/admin/kelas/${kelasId}/edit`, {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+            'X-Requested-With': 'XMLHttpRequest'
         }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP Error ${response.status}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Data edit:', data);
+
+        loading.style.display = 'none';
+        formContent.style.display = 'block';
+        submitBtn.style.display = 'inline-block';
+
+        // ==========================
+        // INI YANG SEBELUMNYA HILANG
+        // ==========================
+        editForm.action = `/admin/kelas/${kelasId}`;
+
+        console.log('Form Action:', editForm.action);
+
+        document.getElementById('edit_nama_kelas').value =
+            data.data.nama_kelas ?? '';
+
+        document.getElementById('edit_tingkat').value =
+            data.data.tingkat ?? '';
+
+        document.getElementById('edit_kode_kelas').value =
+            data.data.kode_kelas ?? '';
+
+        if (document.getElementById('edit_wali_id')) {
+            document.getElementById('edit_wali_id').value =
+                data.data.wali_id ?? '';
+        }
+    })
+    .catch(error => {
+        console.error(error);
+
+        loading.style.display = 'none';
+
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal',
+            text: 'Data kelas tidak dapat dimuat'
+        });
     });
+}); 
 
     document.body.addEventListener('click', function(e) {
         const deleteButton = e.target.closest('.btn-delete');
