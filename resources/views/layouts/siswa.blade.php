@@ -4,7 +4,7 @@
 <head>
     @include('layouts.partials.admin.head')
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'Dashboard') | SMKN 1 BENDO MAGETAN</title>
+    <title>@yield('title', 'Dashboard') | SDN 03 Tomang</title>
     @stack('styles')
 </head>
 

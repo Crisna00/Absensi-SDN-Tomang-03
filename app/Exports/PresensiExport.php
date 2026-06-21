@@ -22,7 +22,7 @@ class PresensiExport implements FromCollection, WithHeadings, WithMapping, WithS
     public function collection()
 {
     
-    $query = Presensi::with(['siswa', 'kelas.wali_kelas']);
+    $query = Presensi::with(['siswa', 'kelas.waliKelas']);
 
     if (!empty($this->filters['kelas_id'])) {
         $query->where('kelas_id', $this->filters['kelas_id']);
@@ -68,7 +68,7 @@ class PresensiExport implements FromCollection, WithHeadings, WithMapping, WithS
         $presensi->kelas->nama_kelas,
         
       
-        $presensi->kelas->wali_kelas->nama_wali ?? '', 
+        $presensi->kelas->waliKelas->nama_wali ?? '', 
         
         $presensi->tanggal_presensi->format('Y-m-d'),
         $presensi->waktu_checkin ? $presensi->waktu_checkin->format('H:i:s') : '',

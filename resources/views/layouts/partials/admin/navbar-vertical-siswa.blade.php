@@ -23,9 +23,11 @@
             </li>
             
             <li class="nav-item">
-                <a class="nav-link has-arrow " href={{ route('siswa.presensi.index') }}>
-                    <i data-feather="QR code scan" class="bi bi-qr-code-scan icon-xs me-2">
-                    </i> Scan Absensi
+    <a class="nav-link" href="{{ route('siswa.presensi.index') }}">
+        <i class="bi bi-qr-code-scan icon-xs me-2"></i>
+        Scan Absensi
+    </a>
+</li>
                 </a>
 
             {{-- <li class="nav-item">
